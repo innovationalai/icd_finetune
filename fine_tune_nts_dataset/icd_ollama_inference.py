@@ -5,12 +5,12 @@ import json
 import requests
 from tqdm import tqdm
 
-OLLAMA_HOST="http://ollama_ip:ollama_port/api/chat"
+OLLAMA_HOST="http://ollama api/api/chat"
 
 # Comparison between raw and fine-tuned models below: Run once for each
 
-# MODEL="qwen3_14b_icd_decoder:latest"
-MODEL="qwen3:14b"
+MODEL="qwen3_14_icd:latest"
+# MODEL="qwen3:14b"
 
 HEADERS = {"Content-Type": "application/json"}
 
@@ -26,8 +26,12 @@ def ollama_chat(messages):
     return resp.json()
 
 def clean_prediction(raw_prediction):
-    match = re.search(r'\[.*?\]', raw_prediction, re.DOTALL)
-    result = ast.literal_eval(match.group()) if match else []
+    try:
+        match = re.search(r'\[.*?\]', raw_prediction, re.DOTALL)
+        result = ast.literal_eval(match.group()) if match else []
+    except Exception as e:
+        print('Error ast parsing: ', str(e))
+        result = None
     return result
 
 
@@ -90,8 +94,9 @@ if __name__ == "__main__":
                     resp = ollama_chat(messages)
                     prediction = resp['message']['content']
                     clean_pred = clean_prediction(prediction)
-                    f1 = f1_per_sample(icd_code, clean_pred)
-                    predictions.append({'True':icd_code, 'Predicted':clean_pred, 'f1': f1})
+                    if clean_pred:
+                        f1 = f1_per_sample(icd_code, clean_pred)
+                        predictions.append({'True':icd_code, 'Predicted':clean_pred, 'f1': f1})
 
     f1s = [entry['f1'] for entry in predictions]
     print(f"Avg — F1: {sum(f1s) / len(f1s):.3f}")

@@ -9,10 +9,10 @@ pip install unsloth
 #### 4- When finetuning done run:
 
 ```bash
-ollama create qwen3_14b_icd_decoder -f /scratch_space/gguf_ollama/icd_model_gguf_gguf/Modelfile
+ollama create qwen3_14_icd:latest -f /scratch_space/gguf_ollama/icd_model_gguf_gguf/Modelfile
 ```
 
-#### `qwen3_14b_icd_decoder` automatically created and loaded into Ollama server. Now run the inference:
+#### `qwen3_14_icd:latest` automatically created and loaded into Ollama server. Now run the inference:
 
 ```bash
 icd_ollama_inference.py
